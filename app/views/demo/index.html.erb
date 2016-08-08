@@ -1,0 +1,14 @@
+<% provide(:title, 'Log in') %>
+<%= javascript_include_tag 'index.js' %>
+<h1> Log in</h1>
+<div class="row">
+    <div class="col-md-6 col-md-offset3">
+        <%= label :post, :email ,id:"label1" %>
+        <%= text_field :post,:email, class: 'form-control' %>
+
+        <%= label :post,:password %>
+        <%= password_field :post,:password, class: 'form-control' %>
+      <%= submit_tag "Log in", class: "btn btn-primary",id:"submit"%>
+    </div>
+
+</div>
