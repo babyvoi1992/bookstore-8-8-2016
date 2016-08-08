@@ -2,18 +2,22 @@ class Api::V1::BooksController < Api::ApiController
   respond_to :json
 
   before_action :authenticate_user!
-  before_action :set_book, only: [:update,:destroy]
+  before_action :set_book, only: [:show,:update,:destroy]
 
   def index
     @books = (current_user.admin?) ? Book.all : current_user.books
 
   end
 
+  def show
+    @book
+  end
+
   def create
     @book = current_user.books.new(book_params)
 
     if @book.save
-      render json: @book, status: :created, location: @book
+      redirect_to api_v1_book_path(@book)
     else
       render json: @book.errors, status: :unprocessable_entity
     end

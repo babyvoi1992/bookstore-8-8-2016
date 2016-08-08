@@ -59,6 +59,7 @@ $(document).ready(function () {
         strVar += "        <p><b>content<\/b><\/p>";
         strVar += "        <p>" + datasource[i].content + "<\/p><\/div>";
         strVar += "        <button type=\"button\" class=\"btn-danger\" data-book-id=\""+datasource[i].id+"\"  style='margin-bottom: 5px;margin-top: 5px'>Delete<\/button>";
+        strVar += "        <button type=\"button\" class=\"btn-primary\" data-book-id=\""+datasource[i].id+"\"  style='margin-bottom: 5px;margin-top: 5px;margin-left:10px'>Edit<\/button>";
         strVar += "    <\/div>";
         strVar += "  <\/div>";
 
@@ -109,6 +110,67 @@ $(document).ready(function () {
 
             }
 
+        })
+    })
+
+    $(".btn-primary").click(function () {
+        id = $(this).attr("data-book-id")
+        $("div>h4").html("Edit Book")
+        $("form>button").html("Edit")
+        $.ajax({
+            url: "/api/v1/books/"+id,
+            method: "GET",
+            headers: {
+                "access-token": getCookie("access-token"),
+                "client": getCookie("client"),
+                "uid": getCookie("uid")
+            },
+            async:false,
+            success: function (data) {
+                $("#myModal").modal();
+                $("#edtTitle").val(data.title);
+                $("#edtContent").val(data.content);
+                $("#edtAuthor").val(data.author);
+            }
+
+        })
+    })
+
+
+    $("#btnAdd").click(function () {
+        $("div>h4").html("Create Book")
+        $("form>button").html("Create")
+        $("#myModal").modal();
+        $("#edtTitle").val("");
+        $("#edtContent").val("");
+        $("#edtAuthor").val("");
+    })
+
+    $("#frmsubmit").submit(function (e) {
+        e.preventDefault();
+        data = {
+            "book":{
+                "title" : $("#edtTitle").val(),
+                "content": $("#edtContent").val(),
+                "author": $("#edtAuthor").val()
+            }
+        }
+        $.ajax({
+            url: "/api/v1/books",
+            method:"POST",
+            headers: {
+                "access-token": getCookie("access-token"),
+                "client": getCookie("client"),
+                "uid": getCookie("uid")
+            },
+            datatype: 'json',
+            async:false,
+            data:data,
+
+            success: function () {
+                window.location.href = "/demo/info"
+
+            }
         })
     })
 })
