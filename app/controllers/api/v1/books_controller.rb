@@ -5,7 +5,7 @@ class Api::V1::BooksController < Api::ApiController
   before_action :set_book, only: [:show,:update,:destroy]
 
   def index
-    @books = (current_user.admin?) ? Book.all : current_user.books
+    @books = (current_user.admin?) ? Book.all.includes(:user) : current_user.books
 
   end
 
@@ -17,7 +17,7 @@ class Api::V1::BooksController < Api::ApiController
     @book = current_user.books.new(book_params)
 
     if @book.save
-      redirect_to api_v1_book_path(@book)
+      redirect_to api_v1_book_path @book
     else
       render json: @book.errors, status: :unprocessable_entity
     end

@@ -1,4 +1,6 @@
 $(document).ready(function () {
+    method = ""
+    url = ""
     var datasource
     $.ajax({
         url: "http://localhost:3000/api/v1/books",
@@ -26,7 +28,7 @@ $(document).ready(function () {
             "    <\/div>" +
             "  <\/div>"
         )
-    } else {
+    } else if (datasource.length > 0){
         $("#bodyContent.container").append(
             "  <div class=\"row\">" +
             "    <div class=\"col-lg-12 col-sm-12\">" +
@@ -58,8 +60,8 @@ $(document).ready(function () {
         strVar += "      <div class=\"well\" style='margin-bottom: 0px'>";
         strVar += "        <p><b>content<\/b><\/p>";
         strVar += "        <p>" + datasource[i].content + "<\/p><\/div>";
-        strVar += "        <button type=\"button\" class=\"btn-danger\" data-book-id=\""+datasource[i].id+"\"  style='margin-bottom: 5px;margin-top: 5px'>Delete<\/button>";
-        strVar += "        <button type=\"button\" class=\"btn-primary\" data-book-id=\""+datasource[i].id+"\"  style='margin-bottom: 5px;margin-top: 5px;margin-left:10px'>Edit<\/button>";
+        strVar += "        <button type=\"button\" class=\"btn-danger\"  data-book-id=\""+datasource[i].id+"\" onclick='deletebook(this)' style='margin-bottom: 5px;margin-top: 5px'>Delete<\/button>";
+        strVar += "        <button type=\"button\" class=\"btn-primary\" data-book-id=\""+datasource[i].id+"\" onclick='editbook(this)' style='margin-bottom: 5px;margin-top: 5px;margin-left:10px'>Edit<\/button>";
         strVar += "    <\/div>";
         strVar += "  <\/div>";
 
@@ -92,7 +94,7 @@ $(document).ready(function () {
     };
     console.log(datasource)
 
-    $(".btn-danger").click(function () {
+   /* $(".btn-danger").click(function () {
         id = $(this).attr("data-book-id")
         htmlremove = $(this).closest("div.row")
 
@@ -111,9 +113,9 @@ $(document).ready(function () {
             }
 
         })
-    })
+    })*/
 
-    $(".btn-primary").click(function () {
+    /*$(".btn-primary").click(function () {
         id = $(this).attr("data-book-id")
         $("div>h4").html("Edit Book")
         $("form>button").html("Edit")
@@ -135,7 +137,7 @@ $(document).ready(function () {
 
         })
     })
-
+*/
 
     $("#btnAdd").click(function () {
         $("div>h4").html("Create Book")
@@ -144,6 +146,8 @@ $(document).ready(function () {
         $("#edtTitle").val("");
         $("#edtContent").val("");
         $("#edtAuthor").val("");
+        method = "POST";
+        url = "/api/v1/books"
     })
 
     $("#frmsubmit").submit(function (e) {
@@ -156,8 +160,8 @@ $(document).ready(function () {
             }
         }
         $.ajax({
-            url: "/api/v1/books",
-            method:"POST",
+            url: url,
+            method: method,
             headers: {
                 "access-token": getCookie("access-token"),
                 "client": getCookie("client"),
@@ -188,4 +192,51 @@ function getCookie(cname) {
         }
     }
     return "";
+}
+function deletebook(e){
+    id = $(e).attr("data-book-id")
+    htmlremove = $(e).closest("div.row")
+
+    $.ajax({
+        url: "/api/v1/books/"+id,
+        method: "DELETE",
+        headers: {
+            "access-token": getCookie("access-token"),
+            "client": getCookie("client"),
+            "uid": getCookie("uid")
+        },
+        async:false,
+        success: function () {
+            htmlremove.remove()
+
+        }
+
+    })
+
+}
+
+function editbook(e) {
+    id = $(e).attr("data-book-id")
+    $("div>h4").html("Edit Book")
+    $("form>button").html("Edit")
+    $.ajax({
+        url: "/api/v1/books/"+id,
+        method: "GET",
+        headers: {
+            "access-token": getCookie("access-token"),
+            "client": getCookie("client"),
+            "uid": getCookie("uid")
+        },
+        async:false,
+        success: function (data) {
+            method = "PUT"
+            $("#myModal").modal();
+            url = "/api/v1/books/"+id
+            $("#edtTitle").val(data.title);
+            $("#edtContent").val(data.content);
+            $("#edtAuthor").val(data.author);
+        }
+
+    })
+
 }
