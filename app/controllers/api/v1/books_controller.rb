@@ -5,8 +5,8 @@ class Api::V1::BooksController < Api::ApiController
   before_action :set_book, only: [:show, :update, :destroy]
 
   def index
+    @username = current_user
     @books = (current_user.admin?) ? Book.all.includes(:user) : current_user.books
-
   end
 
   def show

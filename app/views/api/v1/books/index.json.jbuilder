@@ -1,15 +1,12 @@
-
-json.array!(@books) do |book|
-  json.title book.title
-  json.author book.author
-  json.content book.content
-  json.owner   book.user.email
-  json.id      book.id
-
-  json.partial! 'api/v1/books/book', locals: {book:book}
-
+json.books do
+  json.array!(@books) do |book|
+    json.title book.title
+    json.author book.author
+    json.content book.content
+    json.id      book.id
+  end
 end
 
-
-#json.array! @books, partial: 'books/book', as: :book
+json.html  render :partial =>  'api/v1/books/book', locals: {books:@books}, :formats => [:html],  :handlers=>[:erb]
+json.email   @username.email
 

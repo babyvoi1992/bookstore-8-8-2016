@@ -1,7 +1,7 @@
 $(document).ready(function () {
     method = ""
     url = ""
-    var dataSource
+
     $.ajax({
         url: "http://localhost:3000/api/v1/books",
         method: "GET",
@@ -12,16 +12,11 @@ $(document).ready(function () {
         },
         async: false,
         success: function (data) {
-            dataSource = data
-            encoded = ""
-            for (i=0;i<data.length;i++)
-            {
-                encoded = encoded + data[i].html
-            }
-            $("#txtfield").html(data[0].owner)
-            $("body").append(decoded)
-            var decoded = $("<textarea/>").html(encoded).text();
-            $("#bodyContent.container").append(decoded)
+
+            encoded =data.html;
+            $("#txtfield").html(data.email)
+            //var decoded = $("<textarea/>").html(encoded).text();
+            $("#bodyContent.container").append(encoded)
         }
     })
 
@@ -48,7 +43,7 @@ $(document).ready(function () {
     var delete_cookie = function (name) {
         document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;'
     };
-    console.log(dataSource)
+
 
 
     $("#btnAdd").click(function () {
