@@ -13,61 +13,17 @@ $(document).ready(function () {
         async: false,
         success: function (data) {
             dataSource = data
+            encoded = ""
+            for (i=0;i<data.length;i++)
+            {
+                encoded = encoded + data[i].html
+            }
+            $("#txtfield").html(data[0].owner)
+            $("body").append(decoded)
+            var decoded = $("<textarea/>").html(encoded).text();
+            $("#bodyContent.container").append(decoded)
         }
     })
-
-
-
-    if (dataSource.length > 50) {
-        $("#bodyContent.container").append(
-            "  <div class=\"row\">" +
-            "    <div class=\"col-lg-12 col-sm-12\">" +
-            "      <div class=\"well\">" +
-            "        <p style=\"text-align: center\">admin@gmail.com<\/p>" +
-            "      <\/div>" +
-            "    <\/div>" +
-            "  <\/div>"
-        )
-    } else if (dataSource.length > 0){
-        $("#bodyContent.container").append(
-            "  <div class=\"row\">" +
-            "    <div class=\"col-lg-12 col-sm-12\">" +
-            "      <div class=\"well\">" +
-            "        <p style=\"text-align: center\">" + dataSource[0].owner + "<\/p>" +
-            "      <\/div>" +
-            "    <\/div>" +
-            "  <\/div>"
-        )
-    }
-
-
-    var i = 0
-    while (i < dataSource.length) {
-        var strVar = "";
-        strVar += "<div class=\"row\">";
-        strVar += "    <div class=\"col-lg-2 col-sm-2\">";
-        strVar += "      <div class=\"well\">";
-        strVar += "        <p><b>title<\/b><\/p>";
-        strVar += "        <p>" + dataSource[i].title + "<\/p>";
-        strVar += "      <\/div>";
-        strVar += "    <\/div>";
-        strVar += "    <div class=\"col-lg-2 col-sm-2\">";
-        strVar += "      <div class=\"well\">";
-        strVar += "        <p><b>author<\/b><\/p>";
-        strVar += "        <p>" + dataSource[i].author + "<\/p><\/div>";
-        strVar += "    <\/div>";
-        strVar += "    <div class=\"col-lg-8 col-sm-8\">";
-        strVar += "      <div class=\"well\" style='margin-bottom: 0px'>";
-        strVar += "        <p><b>content<\/b><\/p>";
-        strVar += "        <p>" + dataSource[i].content + "<\/p><\/div>";
-        strVar += "        <button type=\"button\" class=\"btn-danger\"  data-book-id=\""+dataSource[i].id+"\" onclick='deleteBook(this)' style='margin-bottom: 5px;margin-top: 5px'>Delete<\/button>";
-        strVar += "        <button type=\"button\" class=\"btn-primary\" data-book-id=\""+dataSource[i].id+"\" onclick='editBook(this)' style='margin-bottom: 5px;margin-top: 5px;margin-left:10px'>Edit<\/button>";
-        strVar += "    <\/div>";
-        strVar += "  <\/div>";
-
-        $("#bodyContent.container").append(strVar)
-        i++;
-    }
 
     $("#btnlogout").click(function () {
         $.ajax({
@@ -94,50 +50,6 @@ $(document).ready(function () {
     };
     console.log(dataSource)
 
-   /* $(".btn-danger").click(function () {
-        id = $(this).attr("data-book-id")
-        htmlremove = $(this).closest("div.row")
-
-        $.ajax({
-            url: "/api/v1/books/"+id,
-            method: "DELETE",
-            headers: {
-                "access-token": getCookie("access-token"),
-                "client": getCookie("client"),
-                "uid": getCookie("uid")
-            },
-            async:false,
-            success: function () {
-                htmlremove.remove()
-
-            }
-
-        })
-    })*/
-
-    /*$(".btn-primary").click(function () {
-        id = $(this).attr("data-book-id")
-        $("div>h4").html("Edit Book")
-        $("form>button").html("Edit")
-        $.ajax({
-            url: "/api/v1/books/"+id,
-            method: "GET",
-            headers: {
-                "access-token": getCookie("access-token"),
-                "client": getCookie("client"),
-                "uid": getCookie("uid")
-            },
-            async:false,
-            success: function (data) {
-                $("#myModal").modal();
-                $("#edtTitle").val(data.title);
-                $("#edtContent").val(data.content);
-                $("#edtAuthor").val(data.author);
-            }
-
-        })
-    })
-*/
 
     $("#btnAdd").click(function () {
         $("div>h4").html("Create Book")
