@@ -2,11 +2,11 @@ class Api::V1::BooksController < Api::ApiController
   respond_to :json
 
   before_action :authenticate_user!
-  before_action :set_book, only: [:show,:update,:destroy]
+  before_action :set_book, only: [:show, :update, :destroy]
 
   def index
+    @username = current_user
     @books = (current_user.admin?) ? Book.all.includes(:user) : current_user.books
-
   end
 
   def show
@@ -15,21 +15,13 @@ class Api::V1::BooksController < Api::ApiController
 
   def create
     @book = current_user.books.new(book_params)
-
-    if @book.save
-      redirect_to api_v1_book_path @book
-    else
-      render json: @book.errors, status: :unprocessable_entity
-    end
+    @book.save
   end
 
   # PATCH/PUT /books/1
   def update
-    if @book.update(book_params)
-      render json: @book
-    else
-      render json: @book.errors, status: :unprocessable_entity
-    end
+    @book.update(book_params)
+
   end
 
   # DELETE /books/1
