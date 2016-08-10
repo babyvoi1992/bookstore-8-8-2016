@@ -1,7 +1,7 @@
 $(document).ready(function () {
     method = ""
     url = ""
-    var datasource
+    var dataSource
     $.ajax({
         url: "http://localhost:3000/api/v1/books",
         method: "GET",
@@ -12,13 +12,13 @@ $(document).ready(function () {
         },
         async: false,
         success: function (data) {
-            datasource = data
+            dataSource = data
         }
     })
 
 
 
-    if (datasource.length > 50) {
+    if (dataSource.length > 50) {
         $("#bodyContent.container").append(
             "  <div class=\"row\">" +
             "    <div class=\"col-lg-12 col-sm-12\">" +
@@ -28,12 +28,12 @@ $(document).ready(function () {
             "    <\/div>" +
             "  <\/div>"
         )
-    } else if (datasource.length > 0){
+    } else if (dataSource.length > 0){
         $("#bodyContent.container").append(
             "  <div class=\"row\">" +
             "    <div class=\"col-lg-12 col-sm-12\">" +
             "      <div class=\"well\">" +
-            "        <p style=\"text-align: center\">" + datasource[0].owner + "<\/p>" +
+            "        <p style=\"text-align: center\">" + dataSource[0].owner + "<\/p>" +
             "      <\/div>" +
             "    <\/div>" +
             "  <\/div>"
@@ -42,26 +42,26 @@ $(document).ready(function () {
 
 
     var i = 0
-    while (i < datasource.length) {
+    while (i < dataSource.length) {
         var strVar = "";
         strVar += "<div class=\"row\">";
         strVar += "    <div class=\"col-lg-2 col-sm-2\">";
         strVar += "      <div class=\"well\">";
         strVar += "        <p><b>title<\/b><\/p>";
-        strVar += "        <p>" + datasource[i].title + "<\/p>";
+        strVar += "        <p>" + dataSource[i].title + "<\/p>";
         strVar += "      <\/div>";
         strVar += "    <\/div>";
         strVar += "    <div class=\"col-lg-2 col-sm-2\">";
         strVar += "      <div class=\"well\">";
         strVar += "        <p><b>author<\/b><\/p>";
-        strVar += "        <p>" + datasource[i].author + "<\/p><\/div>";
+        strVar += "        <p>" + dataSource[i].author + "<\/p><\/div>";
         strVar += "    <\/div>";
         strVar += "    <div class=\"col-lg-8 col-sm-8\">";
         strVar += "      <div class=\"well\" style='margin-bottom: 0px'>";
         strVar += "        <p><b>content<\/b><\/p>";
-        strVar += "        <p>" + datasource[i].content + "<\/p><\/div>";
-        strVar += "        <button type=\"button\" class=\"btn-danger\"  data-book-id=\""+datasource[i].id+"\" onclick='deletebook(this)' style='margin-bottom: 5px;margin-top: 5px'>Delete<\/button>";
-        strVar += "        <button type=\"button\" class=\"btn-primary\" data-book-id=\""+datasource[i].id+"\" onclick='editbook(this)' style='margin-bottom: 5px;margin-top: 5px;margin-left:10px'>Edit<\/button>";
+        strVar += "        <p>" + dataSource[i].content + "<\/p><\/div>";
+        strVar += "        <button type=\"button\" class=\"btn-danger\"  data-book-id=\""+dataSource[i].id+"\" onclick='deleteBook(this)' style='margin-bottom: 5px;margin-top: 5px'>Delete<\/button>";
+        strVar += "        <button type=\"button\" class=\"btn-primary\" data-book-id=\""+dataSource[i].id+"\" onclick='editBook(this)' style='margin-bottom: 5px;margin-top: 5px;margin-left:10px'>Edit<\/button>";
         strVar += "    <\/div>";
         strVar += "  <\/div>";
 
@@ -92,7 +92,7 @@ $(document).ready(function () {
     var delete_cookie = function (name) {
         document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;'
     };
-    console.log(datasource)
+    console.log(dataSource)
 
    /* $(".btn-danger").click(function () {
         id = $(this).attr("data-book-id")
@@ -193,9 +193,9 @@ function getCookie(cname) {
     }
     return "";
 }
-function deletebook(e){
+function deleteBook(e){
     id = $(e).attr("data-book-id")
-    htmlremove = $(e).closest("div.row")
+    htmlRemove = $(e).closest("div.row")
 
     $.ajax({
         url: "/api/v1/books/"+id,
@@ -207,7 +207,7 @@ function deletebook(e){
         },
         async:false,
         success: function () {
-            htmlremove.remove()
+            htmlRemove.remove()
 
         }
 
@@ -215,7 +215,7 @@ function deletebook(e){
 
 }
 
-function editbook(e) {
+function editBook(e) {
     id = $(e).attr("data-book-id")
     $("div>h4").html("Edit Book")
     $("form>button").html("Edit")
