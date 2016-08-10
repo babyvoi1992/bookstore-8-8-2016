@@ -1,6 +1,7 @@
 $(document).ready(function () {
     method = ""
     url = ""
+    pageSize= 5
 
     $.ajax({
         url: "http://localhost:3000/api/v1/books",
@@ -13,7 +14,7 @@ $(document).ready(function () {
         async: false,
         success: function (data) {
 
-            encoded =data.html;
+            encoded = data.html;
             $("#txtfield").html(data.email)
             //var decoded = $("<textarea/>").html(encoded).text();
             $("#bodyContent.container").append(encoded)
@@ -40,10 +41,10 @@ $(document).ready(function () {
         });
     });
 
+
     var delete_cookie = function (name) {
         document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;'
     };
-
 
 
     $("#btnAdd").click(function () {
@@ -56,12 +57,17 @@ $(document).ready(function () {
         method = "POST";
         url = "/api/v1/books"
     })
+    $(".pagnation").bootpag({
+        total:5
+    }).on("page",function (event,num) {
+        $(this).bootpag({total: 10, maxVisible: 10});
+    })
 
     $("#frmsubmit").submit(function (e) {
         e.preventDefault();
         data = {
-            "book":{
-                "title" : $("#edtTitle").val(),
+            "book": {
+                "title": $("#edtTitle").val(),
                 "content": $("#edtContent").val(),
                 "author": $("#edtAuthor").val()
             }
@@ -75,8 +81,8 @@ $(document).ready(function () {
                 "uid": getCookie("uid")
             },
             datatype: 'json',
-            async:false,
-            data:data,
+            async: false,
+            data: data,
 
             success: function () {
                 window.location.href = "/demo/info"
@@ -100,19 +106,19 @@ function getCookie(cname) {
     }
     return "";
 }
-function deleteBook(e){
+function deleteBook(e) {
     id = $(e).attr("data-book-id")
     htmlRemove = $(e).closest("div.row")
 
     $.ajax({
-        url: "/api/v1/books/"+id,
+        url: "/api/v1/books/" + id,
         method: "DELETE",
         headers: {
             "access-token": getCookie("access-token"),
             "client": getCookie("client"),
             "uid": getCookie("uid")
         },
-        async:false,
+        async: false,
         success: function () {
             htmlRemove.remove()
 
@@ -127,18 +133,18 @@ function editBook(e) {
     $("div>h4").html("Edit Book")
     $("form>button").html("Edit")
     $.ajax({
-        url: "/api/v1/books/"+id,
+        url: "/api/v1/books/" + id,
         method: "GET",
         headers: {
             "access-token": getCookie("access-token"),
             "client": getCookie("client"),
             "uid": getCookie("uid")
         },
-        async:false,
+        async: false,
         success: function (data) {
             method = "PUT"
             $("#myModal").modal();
-            url = "/api/v1/books/"+id
+            url = "/api/v1/books/" + id
             $("#edtTitle").val(data.title);
             $("#edtContent").val(data.content);
             $("#edtAuthor").val(data.author);
