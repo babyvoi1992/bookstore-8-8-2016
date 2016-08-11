@@ -1,43 +1,35 @@
 var method = "";
 var url = "";
-$(document).ready(function () {
 
+$(document).ready(function () {
   var pageSize = 5;
 
-  function getBooks() {
-    var processCallback = function (data) {
-      var total = data.html.length;
-      $("#txtfield").html(data.email);
-      loadPagePagniate(data, pageSize, 1);
-      $(".pagnation").bootpag({
-        total: Math.ceil(total / pageSize),
-        page: 1,
-        maxVisible: 5,
-        firstLastUse: true
-      }).on("page", function (event, num) {
-        $("#bodyContent.container").empty()
-        loadPagePagniate(data, pageSize, num);
-      }, null)
-    };
-    var url = "/api/v1/books";
-    var method = "GET";
-    ajaxRequest(url, method, processCallback, null);
-  };
-
+  // Get all books when loading index page
   getBooks();
-  $("#btnlogout").click(function () {
 
-    var url = "/api/v1/sign_out";
-    var method = "DELETE";
+
+  //
+  // HANDLE BUTTON CLICK EVENT
+  //
+
+
+  // Logout
+  $("#btnlogout").click(function () {
+    var url = "/api/v1/sign_out",
+        method = "DELETE";
+
     var processCallback = function (data) {
-      delete_cookie("access-token");
-      delete_cookie("client");
-      delete_cookie("uid");
+      deleteCookie("access-token");
+      deleteCookie("client");
+      deleteCookie("uid");
       window.location.href = "/demo"
     };
+
     ajaxRequest(url, method, processCallback, null);
   });
 
+
+  // Show New book form
   $("#btnAdd").click(function () {
     $("div>h4").html("Create Book");
     $("form>button").html("Create");
@@ -45,10 +37,32 @@ $(document).ready(function () {
     $("#edtTitle").val("");
     $("#edtContent").val("");
     $("#edtAuthor").val("");
+
     method = "POST";
     url = "/api/v1/books";
   });
 
+
+  // Show Edit book form
+  function editBook(e) {
+    var id = $(e).attr("data-book-id"),
+        url = "/api/v1/books/" + id;
+
+    $("div>h4").html("Edit Book");
+    $("form>button").html("Edit");
+
+    ajaxRequest(url, 'GET', function (data) {
+      $("#myModal").modal();
+      $("#edtTitle").val(data.title);
+      $("#edtContent").val(data.content);
+      $("#edtAuthor").val(data.author);
+    }, null);
+
+    method = "PUT";
+  }
+
+
+  // Submit button (Create new and update existing book)
   $("#frmsubmit").submit(function (e) {
     e.preventDefault();
     data = {
@@ -65,47 +79,48 @@ $(document).ready(function () {
   });
 });
 
-function editBook(e) {
-  id = $(e).attr("data-book-id")
-  $("div>h4").html("Edit Book")
-  $("form>button").html("Edit")
-  url = "/api/v1/books/" + id;
-  ajaxRequest(url, 'GET', function (data) {
-    $("#myModal").modal();
-    $("#edtTitle").val(data.title);
-    $("#edtContent").val(data.content);
-    $("#edtAuthor").val(data.author);
-  }, null);
-  method = "PUT";
-};
 
+// Get all books
+function getBooks() {
+  var url = "/api/v1/books",
+      method = "GET";
+
+  var processCallback = function (data) {
+    var total = data.html.length;
+
+    $("#txtfield").html(data.email);
+    paginateBooks(data, pageSize, 1);
+
+    $(".pagnation").bootpag({
+      total: Math.ceil(total / pageSize),
+      page: 1,
+      maxVisible: 5,
+      firstLastUse: true
+    }).on("page", function (event, num) {
+      $("#bodyContent.container").empty();
+      paginateBooks(data, pageSize, num);
+    }, null)
+  };
+
+  ajaxRequest(url, method, processCallback, null);
+}
+
+
+// Delete a book
 function deleteBook(e) {
-  id = $(e).attr("data-book-id");
-  htmlRemove = $(e).closest("div.row");
-  processCallback = function (data) {
-    htmlRemove.remove();
-  }
+  var id = $(e).attr("data-book-id"),
+      htmlRemove = $(e).closest("div.row"),
+      processCallback = function (data) {
+        htmlRemove.remove();
+      };
+
   url = "/api/v1/books/" + id;
   method = "DELETE";
   ajaxRequest(url, method, processCallback, null);
-};
+}
 
-function getCookie(cname) {
-  var name = cname + "=";
-  var ca = document.cookie.split(';');
-  for (var i = 0; i < ca.length; i++) {
-    var c = ca[i];
-    while (c.charAt(0) == ' ') {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return "";
-};
-
-function loadPagePagniate(data, pagesize, pageindex) {
+// Pagination
+function paginateBooks(data, pagesize, pageindex) {
   html = "";
   htmlrow = data.html.slice((pageindex - 1) * pagesize, pagesize * pageindex)
   for (i = 0; i < htmlrow.length; i++) {
@@ -113,8 +128,10 @@ function loadPagePagniate(data, pagesize, pageindex) {
   }
   var decoded = $("<textarea/>").html(html).text();
   $("#bodyContent.container").append(decoded)
-};
+}
 
+
+// Ajax request function
 function ajaxRequest(_url, _method, _callback, _data) {
   $.ajax({
     url: _url,
@@ -134,8 +151,25 @@ function ajaxRequest(_url, _method, _callback, _data) {
       }
     }
   })
-};
+}
 
-var delete_cookie = function (name) {
+
+// Manage Cookie
+function getCookie(cname) {
+  var name = cname + "=";
+  var ca = document.cookie.split(';');
+  for (var i = 0; i < ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
+function deleteCookie(name) {
   document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;'
-};
+}
