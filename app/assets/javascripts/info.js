@@ -13,12 +13,29 @@ $(document).ready(function () {
         },
         async: false,
         success: function (data) {
-
-            encoded = data.html;
             $("#txtfield").html(data.email)
-            //var decoded = $("<textarea/>").html(encoded).text();
-            $("#bodyContent.container").append(encoded)
+
+            loadPagePagniate(data, pageSize, 1);
+
         }
+
+
+    }).done(function (data) {
+        var total = data.html.length;
+
+        $(".pagnation").bootpag({
+            total:Math.ceil(total/pageSize),
+            page: 1,
+            maxVisible: 5,
+            firstLastUse: true
+
+        }).on("page",function (event,num) {
+            $("#bodyContent.container").empty()
+          loadPagePagniate(data, pageSize, num);
+
+
+
+        })
     })
 
     $("#btnlogout").click(function () {
@@ -56,11 +73,6 @@ $(document).ready(function () {
         $("#edtAuthor").val("");
         method = "POST";
         url = "/api/v1/books"
-    })
-    $(".pagnation").bootpag({
-        total:5
-    }).on("page",function (event,num) {
-        $(this).bootpag({total: 10, maxVisible: 10});
     })
 
     $("#frmsubmit").submit(function (e) {
@@ -152,4 +164,18 @@ function editBook(e) {
 
     })
 
+}
+
+function loadPagePagniate(data, pagesize, pageindex) {
+    html = "";
+    htmlrow = data.html.slice((pageindex - 1) * pagesize, pagesize*pageindex)
+    for (i = 0; i < htmlrow.length; i++) {
+        html += htmlrow[i].html
+    }
+    var decoded = $("<textarea/>").html(html).text();
+    $("#bodyContent.container").append(decoded)
+}
+function removeChildNode()
+{
+    var myNode = ($)
 }
