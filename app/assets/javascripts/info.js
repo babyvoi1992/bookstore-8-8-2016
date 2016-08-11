@@ -1,8 +1,10 @@
+const SIGN_OUT_URL = "/api/v1/sign_out";
+const BOOK_URL = "/api/v1/books/";
 var method = "";
 var url = "";
-
+var pageSize = 5;
 $(document).ready(function () {
-  var pageSize = 5;
+
 
   // Get all books when loading index page
   getBooks();
@@ -15,9 +17,6 @@ $(document).ready(function () {
 
   // Logout
   $("#btnlogout").click(function () {
-    var url = "/api/v1/sign_out",
-        method = "DELETE";
-
     var processCallback = function (data) {
       deleteCookie("access-token");
       deleteCookie("client");
@@ -25,12 +24,15 @@ $(document).ready(function () {
       window.location.href = "/demo"
     };
 
-    ajaxRequest(url, method, processCallback, null);
+    ajaxRequest(SIGN_OUT_URL, "DELETE", processCallback, null);
   });
 
 
   // Show New book form
   $("#btnAdd").click(function () {
+    method = "POST";
+    url = "/api/v1/books";
+
     $("div>h4").html("Create Book");
     $("form>button").html("Create");
     $("#myModal").modal();
@@ -38,28 +40,8 @@ $(document).ready(function () {
     $("#edtContent").val("");
     $("#edtAuthor").val("");
 
-    method = "POST";
-    url = "/api/v1/books";
+
   });
-
-
-  // Show Edit book form
-  function editBook(e) {
-    var id = $(e).attr("data-book-id"),
-        url = "/api/v1/books/" + id;
-
-    $("div>h4").html("Edit Book");
-    $("form>button").html("Edit");
-
-    ajaxRequest(url, 'GET', function (data) {
-      $("#myModal").modal();
-      $("#edtTitle").val(data.title);
-      $("#edtContent").val(data.content);
-      $("#edtAuthor").val(data.author);
-    }, null);
-
-    method = "PUT";
-  }
 
 
   // Submit button (Create new and update existing book)
@@ -82,8 +64,6 @@ $(document).ready(function () {
 
 // Get all books
 function getBooks() {
-  var url = "/api/v1/books",
-      method = "GET";
 
   var processCallback = function (data) {
     var total = data.html.length;
@@ -102,7 +82,27 @@ function getBooks() {
     }, null)
   };
 
-  ajaxRequest(url, method, processCallback, null);
+  ajaxRequest(BOOK_URL, 'GET', processCallback, null);
+}
+
+// Show Edit book form
+function editBook(e) {
+  var id = $(e).attr("data-book-id");
+
+  url = BOOK_URL + id;
+  method = "PUT";
+
+  $("div>h4").html("Edit Book");
+  $("form>button").html("Edit");
+
+  ajaxRequest(url, 'GET', function (data) {
+    $("#myModal").modal();
+    $("#edtTitle").val(data.title);
+    $("#edtContent").val(data.content);
+    $("#edtAuthor").val(data.author);
+  }, null);
+
+
 }
 
 
@@ -114,9 +114,9 @@ function deleteBook(e) {
         htmlRemove.remove();
       };
 
-  url = "/api/v1/books/" + id;
-  method = "DELETE";
-  ajaxRequest(url, method, processCallback, null);
+  var url = BOOK_URL + id;
+
+  ajaxRequest(url, 'DELETE', processCallback, null);
 }
 
 // Pagination
@@ -172,4 +172,8 @@ function getCookie(cname) {
 
 function deleteCookie(name) {
   document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;'
+}
+
+function Container(param) {
+  this.member = param;
 }
