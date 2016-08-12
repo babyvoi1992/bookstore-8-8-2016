@@ -1,7 +1,5 @@
 const SIGN_OUT_URL = "/api/v1/sign_out";
 const BOOK_URL = "/api/v1/books/";
-var method = "";
-var url = "";
 var pageSize = 5;
 $(document).ready(function () {
 
@@ -21,7 +19,7 @@ $(document).ready(function () {
       deleteCookie("access-token");
       deleteCookie("client");
       deleteCookie("uid");
-      window.location.href = "/demo"
+      window.location.href = "/demo";
     };
 
     ajaxRequest(SIGN_OUT_URL, "DELETE", processCallback, null);
@@ -30,9 +28,8 @@ $(document).ready(function () {
 
   // Show New book form
   $("#btnAdd").click(function () {
-    method = "POST";
-    url = "/api/v1/books";
-
+    $("#frmsubmit").data("method-type", "POST");
+    $("#frmsubmit").data("url", BOOK_URL);
     $("div>h4").html("Create Book");
     $("form>button").html("Create");
     $("#myModal").modal();
@@ -40,13 +37,50 @@ $(document).ready(function () {
     $("#edtContent").val("");
     $("#edtAuthor").val("");
 
-
   });
 
+
+  // Delete a book
+  $(".btn-danger[data-book-id]").click(function () {
+    var id = $(this).attr("data-book-id"),
+        htmlRemove = $(this).closest("div.row"),
+        processCallback = function (data) {
+          htmlRemove.remove();
+        };
+
+    var url = BOOK_URL + id;
+
+    ajaxRequest(url, 'DELETE', processCallback, null);
+  })
+
+
+  // Show Edit book form
+  $(".btn-primary[data-book-id]").click(
+      function () {
+        var id = $(this).attr("data-book-id");
+
+        $("#frmsubmit").data("method-type", "PUT");
+        $("#frmsubmit").data("url", BOOK_URL + id);
+
+        $("div>h4").html("Edit Book");
+        $("form>button").html("Edit");
+
+        ajaxRequest(BOOK_URL+id, 'GET', function (data) {
+          $("#myModal").modal();
+          $("#edtTitle").val(data.title);
+          $("#edtContent").val(data.content);
+          $("#edtAuthor").val(data.author);
+        }, null);
+      }
+  )
 
   // Submit button (Create new and update existing book)
   $("#frmsubmit").submit(function (e) {
     e.preventDefault();
+
+    var method = $(this).data("method-type"),
+        url = $(this).data("url");
+
     data = {
       "book": {
         "title": $("#edtTitle").val(),
@@ -54,6 +88,8 @@ $(document).ready(function () {
         "author": $("#edtAuthor").val()
       }
     };
+
+
     processCallback = function (data) {
       window.location.href = "/demo/info";
     };
@@ -79,55 +115,22 @@ function getBooks() {
     }).on("page", function (event, num) {
       $("#bodyContent.container").empty();
       paginateBooks(data, pageSize, num);
-    }, null)
+    }, null);
   };
 
   ajaxRequest(BOOK_URL, 'GET', processCallback, null);
 }
 
-// Show Edit book form
-function editBook(e) {
-  var id = $(e).attr("data-book-id");
-
-  url = BOOK_URL + id;
-  method = "PUT";
-
-  $("div>h4").html("Edit Book");
-  $("form>button").html("Edit");
-
-  ajaxRequest(url, 'GET', function (data) {
-    $("#myModal").modal();
-    $("#edtTitle").val(data.title);
-    $("#edtContent").val(data.content);
-    $("#edtAuthor").val(data.author);
-  }, null);
-
-
-}
-
-
-// Delete a book
-function deleteBook(e) {
-  var id = $(e).attr("data-book-id"),
-      htmlRemove = $(e).closest("div.row"),
-      processCallback = function (data) {
-        htmlRemove.remove();
-      };
-
-  var url = BOOK_URL + id;
-
-  ajaxRequest(url, 'DELETE', processCallback, null);
-}
 
 // Pagination
 function paginateBooks(data, pagesize, pageindex) {
   html = "";
-  htmlrow = data.html.slice((pageindex - 1) * pagesize, pagesize * pageindex)
+  htmlrow = data.html.slice((pageindex - 1) * pagesize, pagesize * pageindex);
   for (i = 0; i < htmlrow.length; i++) {
     html += htmlrow[i].html
   }
   var decoded = $("<textarea/>").html(html).text();
-  $("#bodyContent.container").append(decoded)
+  $("#bodyContent.container").append(decoded);
 }
 
 
@@ -172,8 +175,4 @@ function getCookie(cname) {
 
 function deleteCookie(name) {
   document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;'
-}
-
-function Container(param) {
-  this.member = param;
 }
