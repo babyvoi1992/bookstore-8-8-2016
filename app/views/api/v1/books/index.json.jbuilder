@@ -4,6 +4,7 @@ json.books do
     json.author   book.author
     json.content  book.content
     json.id       book.id
+    json.url      book.imageurl
   end
 end
 json.html do

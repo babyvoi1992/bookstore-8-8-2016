@@ -51,7 +51,7 @@ $(document).ready(function () {
     var url = BOOK_URL + id;
 
     ajaxRequest(url, 'DELETE', processCallback, null);
-  })
+  });
 
 
   // Show Edit book form
@@ -72,7 +72,7 @@ $(document).ready(function () {
           $("#edtAuthor").val(data.author);
         }, null);
       }
-  )
+  );
 
   // Submit button (Create new and update existing book)
   $("#frmsubmit").submit(function (e) {

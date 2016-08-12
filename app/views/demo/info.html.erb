@@ -7,6 +7,8 @@
     <a class="navbar-brand" id="btnlogout">Log out</a>
 
     <a class="navbar-brand" style="padding-left: 50px;" id="btnAdd">Add book</a>
+
+    <a class="navbar-brand" style="padding-left: 50px;" id="btnExportExcel" href="<%=export_excel_demo_index_path(format: :xlsx) %>">ExportExcel</a>
   </div><!-- /.container -->
 
 
@@ -32,7 +34,6 @@
     text-align: center;
     font-size: 30px;
   }
-
   .modal-footer {
     background-color: #f9f9f9;
   }
@@ -51,7 +52,7 @@
           <h4><span class="glyphicon glyphicon-edit"></span> Create Book</h4>
         </div>
         <div class="modal-body" style="padding:40px 50px;">
-          <form role="form" id="frmsubmit">
+          <form role="form" id="frmsubmit" data-method-type="" data-url="">
             <div class="form-group">
               <label for="title"><span class="glyphicon glyphicon-book"></span> Title</label>
               <input type="text" class="form-control" id="edtTitle" placeholder="Enter Book Title">
@@ -82,8 +83,4 @@
     </div>
   </div>
 </div>
-
-
-
-
 

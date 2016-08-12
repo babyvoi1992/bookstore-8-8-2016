@@ -1,5 +1,11 @@
 @import "bootstrap-sprockets";
 @import "bootstrap";
+
+@media (min-width: 1200px) {
+  .container {
+    width: 1600px;
+  }
+}
 /*
  * This is a manifest file that'll be compiled into application.css, which will include all the files
  * listed below.

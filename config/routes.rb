@@ -5,6 +5,8 @@ Rails.application.routes.draw do
   resources :demo, except: [:create,:update,:destroy,:edit,:show] do
     collection do
       get 'info'
+      get 'export_excel'
+      get 'test'
     end
   end
 
