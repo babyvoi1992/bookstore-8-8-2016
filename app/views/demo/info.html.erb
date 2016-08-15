@@ -8,7 +8,7 @@
 
     <a class="navbar-brand" style="padding-left: 50px;" id="btnAdd">Add book</a>
 
-    <a class="navbar-brand" style="padding-left: 50px;" id="btnExportExcel" href="<%=export_excel_demo_index_path(format: :xlsx) %>">ExportExcel</a>
+    <a class="navbar-brand" style="padding-left: 50px;" id="btnExportExcel" href="<%= export_excel_demo_index_path(format: :xlsx) %>">ExportExcel</a>
   </div><!-- /.container -->
 
 
@@ -34,6 +34,7 @@
     text-align: center;
     font-size: 30px;
   }
+
   .modal-footer {
     background-color: #f9f9f9;
   }
@@ -55,7 +56,8 @@
           <form role="form" id="frmsubmit" data-method-type="" data-url="">
             <div class="form-group">
               <label for="title"><span class="glyphicon glyphicon-book"></span> Title</label>
-              <input type="text" class="form-control" id="edtTitle" placeholder="Enter Book Title">
+              <input type="text" class="form-control" id="edtTitle" placeholder="Enter Book Title" pattern=".{8,15}" oninvalid="setCustomValidity('Please enter 8-15 character')"
+                     onchange="try{setCustomValidity('')}catch(e){}" >
             </div>
             <div class="form-group">
               <label for="author"><span class="glyphicon glyphicon-book"></span> Author</label>
@@ -64,10 +66,18 @@
 
             <div class="form-group">
               <label for="content"><span class="glyphicon glyphicon-book"></span> Content</label>
-              <input type="text" class="form-control" id="edtContent" placeholder="Enter Content Books">
+              <input type="text" class="form-control" id="edtContent" placeholder="Enter Content Books" pattern=".{8,20}" oninvalid="setCustomValidity('Please enter 8-20 character')"
+                     onchange="try{setCustomValidity('')}catch(e){}" >
+
             </div>
 
-            <button type="submit" class="btn btn-success btn-block">
+            <div class="form-group">
+              <label for="content"><span class="glyphicon glyphicon-book"></span> </label>
+              <input type="file" id="inputFile" accept="image/*">
+              <img  id="imgthumbnail" class="img-thumbnail" >
+            </div>
+
+            <button type="submit" id="btnsubmit" class="btn btn-success btn-block">
               <span class="glyphicon glyphicon-circle-arrow-right"></span> Create
             </button>
           </form>

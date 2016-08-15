@@ -1,6 +1,7 @@
 const SIGN_OUT_URL = "/api/v1/sign_out";
 const BOOK_URL = "/api/v1/books/";
 var pageSize = 5;
+img = "";
 $(document).ready(function () {
 
 
@@ -36,12 +37,13 @@ $(document).ready(function () {
     $("#edtTitle").val("");
     $("#edtContent").val("");
     $("#edtAuthor").val("");
+    $("#imgthumbnail").hide()
 
   });
 
 
   // Delete a book
-  $(".btn-danger[data-book-id]").click(function () {
+  $("#bodyContent.container").on('click', '.btn-danger[data-book-id]', function () {
     var id = $(this).attr("data-book-id"),
         htmlRemove = $(this).closest("div.row"),
         processCallback = function (data) {
@@ -55,8 +57,7 @@ $(document).ready(function () {
 
 
   // Show Edit book form
-  $(".btn-primary[data-book-id]").click(
-      function () {
+  $("#bodyContent.container").on('click', '.btn-primary[data-book-id]', function () {
         var id = $(this).attr("data-book-id");
 
         $("#frmsubmit").data("method-type", "PUT");
@@ -65,29 +66,54 @@ $(document).ready(function () {
         $("div>h4").html("Edit Book");
         $("form>button").html("Edit");
 
-        ajaxRequest(BOOK_URL+id, 'GET', function (data) {
+        ajaxRequest(BOOK_URL + id, 'GET', function (data) {
+
           $("#myModal").modal();
           $("#edtTitle").val(data.title);
           $("#edtContent").val(data.content);
           $("#edtAuthor").val(data.author);
+          $("#imgthumbnail").attr("src",data.url)
+              .css("display","block")
+              .width(50)
+              .height(50)
         }, null);
       }
   );
+
+  // read file upload
+  $("#inputFile").change(function () {
+    if (this.files && this.files[0]) {
+      var FR = new FileReader();
+      FR.onload = function (e) {
+        $("#btnsubmit").hide();
+        img = e.target.result
+        $("#imgthumbnail").attr('src',e.target.result)
+                       .css("display","block")
+                       .width(50)
+                       .height(50)
+        if (e.target.readyState == FileReader.DONE){
+          $("#btnsubmit").show();
+        }
+      }
+      FR.readAsDataURL(this.files[0]);
+    }
+  })
 
   // Submit button (Create new and update existing book)
   $("#frmsubmit").submit(function (e) {
     e.preventDefault();
 
     var method = $(this).data("method-type"),
-        url = $(this).data("url");
+        url = $(this).data("url"),
 
-    data = {
-      "book": {
-        "title": $("#edtTitle").val(),
-        "content": $("#edtContent").val(),
-        "author": $("#edtAuthor").val()
-      }
-    };
+        data = {
+          "book": {
+            "title": $("#edtTitle").val(),
+            "content": $("#edtContent").val(),
+            "author": $("#edtAuthor").val(),
+            "imageurl": img
+          }
+        };
 
 
     processCallback = function (data) {
@@ -152,6 +178,11 @@ function ajaxRequest(_url, _method, _callback, _data) {
       if (typeof _callback === "function") {
         _callback(data);
       }
+    },
+    error: function (data) {
+      if (_method == "DELETE" && typeof  _callback === "function") {
+        _callback(data);
+      }
     }
   })
 }
@@ -172,6 +203,7 @@ function getCookie(cname) {
   }
   return "";
 }
+
 
 function deleteCookie(name) {
   document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;'

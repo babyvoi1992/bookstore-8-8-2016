@@ -1,3 +1,5 @@
+LINK_CONST="http://localhost:3000/"
+LINK_DEFAULT_CONST = "http://localhost:3000/books/default.jpeg"
 class Api::V1::BooksController < Api::ApiController
   respond_to :json
 
@@ -15,13 +17,41 @@ class Api::V1::BooksController < Api::ApiController
 
   def create
     @book = current_user.books.new(book_params)
-    @book.save
+    id = Book.last.id+1
+    p @book.imageurl
+    unless @book.imageurl == ''
+      data = @book.imageurl
+      path = write_file(data, id)
+      @book.imageurl = LINK_CONST+path
+    else
+      @book.imageurl= LINK_DEFAULT_CONST
+    end
+    if @book.save
+      @book
+    else
+      render 'api/v1/books/error', locals: {book: @book}
+    end
   end
 
   # PATCH/PUT /books/1
   def update
-    @book.update(book_params)
-
+    params = book_params
+    id= @book.id
+    p  "enter here"
+    p  params[:imageurl]
+    p  @book.id
+    unless params[:imageurl] == ''
+      data =    params[:imageurl]
+      path = write_file(data, id)
+      params[:imageurl] = LINK_CONST+path
+    else
+      params[:imageurl] = LINK_DEFAULT_CONST
+    end
+    if @book.update(params)
+      @book
+    else
+      render 'api/v1/books/error', locals: {book: @book}
+    end
   end
 
   # DELETE /books/1
@@ -37,7 +67,16 @@ class Api::V1::BooksController < Api::ApiController
 
   # Only allow a trusted parameter "white list" through.
   def book_params
-    params.require(:book).permit(:title, :content, :author)
+    params.require(:book).permit(:title, :content, :author,:imageurl)
+  end
+
+  def write_file(data, id)
+    header = data[/(data:.+)+base64,/]
+    image_file = Base64.decode64(data[header.length..-1])
+    path = "books/#{id}.#{data[/jpeg|png|jpg|gif/]}"
+    new_file=File.new(Rails.public_path.join(path), 'wb')
+    new_file.write(image_file)
+    path
   end
 end
 
