@@ -8,6 +8,7 @@ class DemoController < ApplicationController
   end
 
   def export_excel
+    @username
     @books = Book.all
     respond_to do |format|
       format.xlsx {
@@ -17,6 +18,9 @@ class DemoController < ApplicationController
   end
 
   def test
+  end
+
+  def sign_up
 
   end
 end

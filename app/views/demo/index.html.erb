@@ -5,10 +5,12 @@
     <div class="col-md-6 col-md-offset3">
         <%= label :post, :email ,id:"label1" %>
         <%= text_field :post,:email, class: 'form-control' %>
-
+        <br/>
         <%= label :post,:password %>
         <%= password_field :post,:password, class: 'form-control' %>
+      <br/>
       <%= submit_tag "Log in", class: "btn btn-primary",id:"submit"%>
-    </div>
 
+    </div>
 </div>
+<p>New user? <%= link_to "Sign up now!", sign_up_demo_index_path %></p>

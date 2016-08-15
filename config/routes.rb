@@ -7,6 +7,7 @@ Rails.application.routes.draw do
       get 'info'
       get 'export_excel'
       get 'test'
+      get 'sign_up'
     end
   end
 
