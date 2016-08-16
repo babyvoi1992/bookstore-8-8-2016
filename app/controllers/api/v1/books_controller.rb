@@ -1,25 +1,27 @@
-LINK_CONST="http://localhost:3000/"
-LINK_DEFAULT_CONST = "http://localhost:3000/books/default.jpeg"
+LINK_CONST = 'http://localhost:3000/'
+LINK_DEFAULT_CONST = 'http://localhost:3000/books/default.jpeg'
 class Api::V1::BooksController < Api::ApiController
   respond_to :json
 
   before_action :authenticate_user!
   before_action :set_book, only: [:show, :update, :destroy]
 
+  #get all books
   def index
     @username = current_user
     @books = (current_user.admin?) ? Book.all.includes(:user) : current_user.books
   end
 
+  #show boook by index
   def show
     @book
   end
 
+  #create new book
   def create
     @book = current_user.books.new(book_params)
     id = Book.last.id+1
-    p @book.imageurl
-    unless @book.imageurl == ''
+    if @book.imageurl != ''
       data = @book.imageurl
       path = write_file(data, id)
       @book.imageurl = LINK_CONST+path
@@ -37,11 +39,8 @@ class Api::V1::BooksController < Api::ApiController
   def update
     params = book_params
     id= @book.id
-    p  "enter here"
-    p  params[:imageurl]
-    p  @book.id
-    unless params[:imageurl] == ''
-      data =    params[:imageurl]
+    if params[:imageurl] != ''
+      data = params[:imageurl]
       path = write_file(data, id)
       params[:imageurl] = LINK_CONST+path
     else
@@ -67,9 +66,10 @@ class Api::V1::BooksController < Api::ApiController
 
   # Only allow a trusted parameter "white list" through.
   def book_params
-    params.require(:book).permit(:title, :content, :author,:imageurl)
+    params.require(:book).permit(:title, :content, :author, :imageurl)
   end
 
+  #Write file to public folder
   def write_file(data, id)
     header = data[/(data:.+)+base64,/]
     image_file = Base64.decode64(data[header.length..-1])

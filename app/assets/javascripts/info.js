@@ -1,10 +1,12 @@
 const SIGN_OUT_URL = "/api/v1/sign_out";
 const BOOK_URL = "/api/v1/books/";
-var pageSize = 5;
-img = "";
+var pageSize = 5,
+    img = "";
+
+
 $(document).ready(function () {
 
-
+  var $bodyContent = $("#bodyContent.container");
   // Get all books when loading index page
   getBooks();
 
@@ -29,21 +31,23 @@ $(document).ready(function () {
 
   // Show New book form
   $("#btnAdd").click(function () {
-    $("#frmsubmit").data("method-type", "POST");
-    $("#frmsubmit").data("url", BOOK_URL);
+    var $frmSubmit = $("#frmsubmit");
+
+    $frmSubmit.data("method-type", "POST");
+    $frmSubmit.data("url", BOOK_URL);
     $("div>h4").html("Create Book");
     $("form>button").html("Create");
     $("#myModal").modal();
     $("#edtTitle").val("");
     $("#edtContent").val("");
     $("#edtAuthor").val("");
-    $("#imgthumbnail").hide()
+    $("#imgthumbnail").hide();
 
   });
 
 
   // Delete a book
-  $("#bodyContent.container").on('click', '.btn-danger[data-book-id]', function () {
+  $bodyContent.on('click', '.btn-danger[data-book-id]', function () {
     var id = $(this).attr("data-book-id"),
         htmlRemove = $(this).closest("div.row"),
         processCallback = function (data) {
@@ -57,11 +61,11 @@ $(document).ready(function () {
 
 
   // Show Edit book form
-  $("#bodyContent.container").on('click', '.btn-primary[data-book-id]', function () {
+  $bodyContent.on('click', '.btn-primary[data-book-id]', function () {
         var id = $(this).attr("data-book-id");
-
-        $("#frmsubmit").data("method-type", "PUT");
-        $("#frmsubmit").data("url", BOOK_URL + id);
+        var frmSubmit = $("#frmsubmit");
+        frmSubmit.data("method-type", "PUT");
+        frmSubmit.data("url", BOOK_URL + id);
 
         $("div>h4").html("Edit Book");
         $("form>button").html("Edit");
@@ -72,8 +76,8 @@ $(document).ready(function () {
           $("#edtTitle").val(data.title);
           $("#edtContent").val(data.content);
           $("#edtAuthor").val(data.author);
-          $("#imgthumbnail").attr("src",data.url)
-              .css("display","block")
+          $("#imgthumbnail").attr("src", data.url)
+              .css("display", "block")
               .width(50)
               .height(50)
         }, null);
@@ -85,19 +89,18 @@ $(document).ready(function () {
     if (this.files && this.files[0]) {
       var FR = new FileReader();
       FR.onload = function (e) {
-        $("#btnsubmit").hide();
-        img = e.target.result
-        $("#imgthumbnail").attr('src',e.target.result)
-                       .css("display","block")
-                       .width(50)
-                       .height(50)
-        if (e.target.readyState == FileReader.DONE){
-          $("#btnsubmit").show();
-        }
-      }
+
+        img = e.target.result;
+
+        $("#imgthumbnail").attr('src', e.target.result)
+            .css("display", "block")
+            .width(50)
+            .height(50)
+
+      };
       FR.readAsDataURL(this.files[0]);
     }
-  })
+  });
 
   // Submit button (Create new and update existing book)
   $("#frmsubmit").submit(function (e) {
@@ -116,7 +119,7 @@ $(document).ready(function () {
         };
 
 
-    processCallback = function (data) {
+    var processCallback = function (data) {
       window.location.href = "/demo/info";
     };
     ajaxRequest(url, method, processCallback, data);
@@ -150,9 +153,9 @@ function getBooks() {
 
 // Pagination
 function paginateBooks(data, pagesize, pageindex) {
-  html = "";
-  htmlrow = data.html.slice((pageindex - 1) * pagesize, pagesize * pageindex);
-  for (i = 0; i < htmlrow.length; i++) {
+  var html = "",
+      htmlrow = data.html.slice((pageindex - 1) * pagesize, pagesize * pageindex);
+  for (var i = 0; i < htmlrow.length; i++) {
     html += htmlrow[i].html
   }
   var decoded = $("<textarea/>").html(html).text();
